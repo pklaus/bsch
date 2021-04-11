@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import ftplib
 import collections
 import os
@@ -53,20 +51,17 @@ class FTP(ftplib.FTP):
 def main():
     import argparse
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--folder", default=".")
-    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--folder", default=".", help="Target folder for downloaded images.")
+    parser.add_argument("--force", action="store_true", help="Overwrite existing files.")
     args = parser.parse_args()
 
     with FTP() as gtc400c:
         files = gtc400c.list_files()
         for file in files:
             target_path = os.path.join(args.folder, file.name)
-            if os.path.exists(target_path):
+            if os.path.exists(target_path) and not args.force:
                 print(f"{file.name} - already downloaded - skipping...")
                 continue
             with open(target_path, 'wb') as fp:
                 gtc400c.download(file, fp=fp)
                 print(f"{file.name} - download complete")
-
-if __name__ == "__main__":
-    main()

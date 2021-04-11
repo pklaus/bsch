@@ -19,6 +19,7 @@ setup(
         'console_scripts': [
             'gtc400c-plot = bsch.gtc400c.util:cli_plot',
             'gtc400c-blend = bsch.gtc400c.util:cli_blend',
+            'gtc400c-ftp = bsch.gtc400c.ftp:main',
         ],
     }
 )
