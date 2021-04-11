@@ -19,12 +19,12 @@ segment_signatures = [
 class InvalidFileError(Exception):
     pass
 
-def extract(filename):
+def thermoblob_extr(jpeg_data):
+    """ Extract the thermoblob from the given JPEG data """
 
     thermoblob = None
 
-    with open(filename, 'rb') as f:
-        content = f.read()
+    content = jpeg_data
 
     # SOI - Start of Image
     assert content[0:2] == b'\xFF\xD8'
@@ -118,7 +118,8 @@ def main():
 
     VERBOSE = args.verbose
 
-    thermoblob = extract(args.jpeg_file)
+    with open(args.jpeg_file, 'rb') as f:
+        thermoblob = thermoblob_extr(f.read())
 
     with open(args.output, "wb") as f:
         f.write(thermoblob)
