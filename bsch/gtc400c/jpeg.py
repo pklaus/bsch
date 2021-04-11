@@ -21,7 +21,7 @@ class InvalidFileError(Exception):
 
 def extract(filename):
 
-    thermography_payload = None
+    thermoblob = None
 
     with open(filename, 'rb') as f:
         content = f.read()
@@ -51,9 +51,9 @@ def extract(filename):
                 length = content[pos+2] * 256 + content[pos+3]
                 if VERBOSE: print(f"Found {segdef['name']} segment with {length} bytes length.")
                 if segdef['name'] == "BSCH-APPF":
-                    thermography_payload = content[pos+2:pos+2+length]
+                    thermoblob = content[pos+2:pos+2+length]
                     # basically we can abort reading the file at this point...
-                    return thermography_payload
+                    return thermoblob
                 pos += 2 + length
                 break
             if marker == segdef['marker'] and segdef.get('length') == 'scan':
@@ -101,10 +101,10 @@ def extract(filename):
     else:
         if VERBOSE: print(f"No trailing content.")
 
-    if thermography_payload is None:
+    if thermoblob is None:
         raise InvalidFileError("No thermography data found, please open an image like RB-----Y.JPG")
 
-    return thermography_payload
+    return thermoblob
 
 def main():
     global VERBOSE
@@ -118,10 +118,10 @@ def main():
 
     VERBOSE = args.verbose
 
-    payload = extract(args.jpeg_file)
+    thermoblob = extract(args.jpeg_file)
 
     with open(args.output, "wb") as f:
-        f.write(payload)
+        f.write(thermoblob)
 
 if __name__ == "__main__":
     main()
