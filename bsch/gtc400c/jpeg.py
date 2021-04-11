@@ -1,6 +1,8 @@
-#!/usr/bin/env python
-
-# for Bosch GTC 400 C
+"""
+Tools to handle the JPG files saved by the Bosch GTC 400 C.
+Main task: extract the 'thermoblob', i.e. the binary
+thermography data embedded into the file.
+"""
 
 VERBOSE = False
 
@@ -115,6 +117,9 @@ def main():
     parser.add_argument('--output')
     parser.add_argument('jpeg_file')
     args = parser.parse_args()
+
+    if args.output is None:
+        args.output = args.jpeg_file + ".thermoblob"
 
     VERBOSE = args.verbose
 
