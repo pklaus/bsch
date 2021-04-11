@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # read the contents of your README file
 from os import path
@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
     name='bsch',
     version='0.1.dev0',
-    packages=['bsch'],
+    packages=find_packages(),
     long_description=long_description,
     long_description_content_type='text/markdown',
     install_requires=[
