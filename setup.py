@@ -9,6 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
     name='bsch',
     version='1.0.dev0',
+    url = 'https://github.com/pklaus/bsch',
     packages=find_packages(),
     long_description=long_description,
     long_description_content_type='text/markdown',
