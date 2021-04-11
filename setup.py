@@ -15,4 +15,10 @@ setup(
     install_requires=[
         'typing',
     ],
+    entry_points = {
+        'console_scripts': [
+            'gtc400c-plot = bsch.gtc400c.irutil:cli_plot',
+            'gtc400c-blend = bsch.gtc400c.irutil:cli_blend',
+        ],
+    }
 )
