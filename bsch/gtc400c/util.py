@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 
-import struct
-import io
-from typing import Union
+import argparse, io
 
 from .jpeg import thermoblob_extr
 from .metadata import metadata_extr
 from .fusion import Thermography
 
+def remove_ext(filename, ext=".JPG"):
+    if filename.endswith(ext):
+        return filename[:-len(ext)]
+    return filename
+
 def cli_plot():
     from matplotlib import pyplot as plt
-    import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("measurement_file")
+    parser.add_argument("jpeg_file", type=argparse.FileType("rb"))
     args = parser.parse_args()
 
-    with open(args.measurement_file, "rb") as f:
-        t = Thermography(f.read())
+    t = Thermography(args.jpeg_file.read())
 
     plt.imshow(t.get_matrix_lst())
     plt.colorbar()
@@ -67,17 +68,19 @@ def blend_real_and_ir(t: Thermography, scale=3.25, shift=(8, 6), alpha=0.667, sa
     return blend
 
 def cli_blend():
-    import argparse
     from matplotlib import pyplot as plt
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--scale", type=float, default=3.25, help="Scale the IR image up by this factor.")
     parser.add_argument("--shift", type=lambda x: tuple(int(e) for e in x.split(",")), default=(8, 6), help="Shift the IR image w.r.t. the real image by this amount of pixels.")
     parser.add_argument("--alpha", type=float, default=0.667, help="Transparency of the IR thermography overlay, range: 0.0 - 1.0.")
     parser.add_argument("--sat", type=float, default=0.4, help="Saturation of the real image, range: 0.0 - 1.0.")
     parser.add_argument("--cmap", type=plt.get_cmap, default="rainbow", help="Colormap to use. See matplotlib's documentation.")
-    parser.add_argument("measurement_file")
+    parser.add_argument("--output", help="Output filename. If None, it will be derived from the jpeg_file.")
+    parser.add_argument("jpeg_file", type=argparse.FileType("rb"))
     args = parser.parse_args()
-    t = Thermography(args.measurement_file)
+    if not args.output:
+        output = remove_ext(args.jpeg_file.name) + ".blend.png"
+    t = Thermography(args.jpeg_file.read())
     blend = blend_real_and_ir(t, scale=args.scale, shift=args.shift, alpha=args.alpha, sat=args.sat, cmap=args.cmap)
-    blend.save(args.measurement_file + ".blend.png")
-    print(args.measurement_file + ".blend.png")
+    blend.save(output)
+    print(output)
