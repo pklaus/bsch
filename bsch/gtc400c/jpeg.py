@@ -53,7 +53,7 @@ def thermoblob_extr(jpeg_data):
                 length = content[pos+2] * 256 + content[pos+3]
                 if VERBOSE: print(f"Found {segdef['name']} segment with {length} bytes length.")
                 if segdef['name'] == "BSCH-APPF":
-                    thermoblob = content[pos+2:pos+2+length]
+                    thermoblob = content[pos+4:pos+2+length]
                     # basically we can abort reading the file at this point...
                     return thermoblob
                 pos += 2 + length
