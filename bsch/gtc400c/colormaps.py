@@ -22,10 +22,7 @@ def get_cmap(name, lut=None):
 class Colormap:
 
     int_cdict = None
-
-    @property
-    def name(cls):
-        return cls.__class__.__name__
+    name = None
 
     @classmethod
     def float_cdict(cls):
@@ -47,6 +44,7 @@ class Colormap:
 # The individual colormaps:
 
 class Greyscale(Colormap):
+    name = "Greyscale"
     int_cdict = {
         "blue": [(0, 0, 0), (1023, 255, 255)],
         "green": [(0, 0, 0), (1023, 255, 255)],
@@ -55,6 +53,7 @@ class Greyscale(Colormap):
 
 
 class Rainbow(Colormap):
+    name = "Rainbow"
     int_cdict = {
         "blue": [
             (0, 196, 196),
@@ -75,6 +74,7 @@ class Rainbow(Colormap):
 
 
 class RainbowHM(Colormap):
+    name = "RainbowHM"
     int_cdict = {
         "blue": [
             (0, 0, 0),
@@ -110,6 +110,7 @@ class RainbowHM(Colormap):
 
 
 class Iron(Colormap):
+    name = "Iron"
     int_cdict = {
         "blue": [
             (0, 0, 0),
