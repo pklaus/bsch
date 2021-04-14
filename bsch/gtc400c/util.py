@@ -42,8 +42,7 @@ def cli_thermogram():
     t = Thermography(args.jpeg_file.read())
 
     if args.cmap is None:
-        cmap = t.get("color_map")
-        args.cmap = colormaps.get_cmap(cmap.name)
+        args.cmap = colormaps.get_cmap(t.get("color_map").name)
 
     fig = plt.figure(figsize=(8, 6), dpi=96)
     ax = plt.gca()
@@ -67,19 +66,23 @@ def cli_plot():
     args = parser.parse_args()
 
     t = Thermography(args.jpeg_file.read())
+    cmap = colormaps.get_cmap(t.get("color_map").name)
 
-    plt.imshow(t.get_matrix_lst())
+    plt.imshow(t.get_matrix_lst(), cmap=cmap)
     plt.colorbar()
     plt.show()
 
-def blend_real_and_ir(t: Thermography, scale=3.25, shift=(8, 6), alpha=0.667, sat=0.4, cmap="rainbow"):
+def blend_real_and_ir(t: Thermography, scale=3.25, shift=(8, 6), alpha=0.667, sat=0.4, cmap=None):
     """ blend the real and the ir images together """
 
     from matplotlib import pyplot as plt
     from PIL import Image, ImageEnhance
 
-    if type(cmap) == str:
-        cmap = plt.get_cmap(cmap)
+    if cmap is None:
+        # use the one embedded in the JPEG:
+        cmap = colormaps.get_cmap(t.get("color_map").name)
+    elif type(cmap) == str:
+        cmap = get_cmap(cmap)
 
     matrix = t.get_matrix_lst()
 
@@ -122,13 +125,15 @@ def cli_blend():
     parser.add_argument("--shift", type=lambda x: tuple(int(e) for e in x.split(",")), default=(8, 6), help="Shift the IR image w.r.t. the real image by this amount of pixels.")
     parser.add_argument("--alpha", type=float, default=0.667, help="Transparency of the IR thermography overlay, range: 0.0 - 1.0.")
     parser.add_argument("--sat", type=float, default=0.4, help="Saturation of the real image, range: 0.0 - 1.0.")
-    parser.add_argument("--cmap", type=plt.get_cmap, default="rainbow", help="Colormap to use. See matplotlib's documentation.")
+    parser.add_argument("--cmap", type=get_cmap, metavar="CMAP_NAME", help=f"Colormap to use. By default, the one stored in the JPEG is used. You can choose from the GTC colormaps {', '.join(colormaps.colormaps())}. As an ALTERNATIVE, select one of matplotlib's colormaps: {', '.join(plt.colormaps())}")
     parser.add_argument("--output", help="Output filename. If None, it will be derived from the jpeg_file.")
     parser.add_argument("jpeg_file", type=argparse.FileType("rb"))
     args = parser.parse_args()
     if not args.output:
         output = remove_ext(args.jpeg_file.name) + ".blend.png"
     t = Thermography(args.jpeg_file.read())
+    if args.cmap is None:
+        args.cmap = colormaps.get_cmap(t.get("color_map").name)
     blend = blend_real_and_ir(t, scale=args.scale, shift=args.shift, alpha=args.alpha, sat=args.sat, cmap=args.cmap)
     blend.save(output)
     print(output)
