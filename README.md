@@ -1,8 +1,21 @@
 # bsch
 
 A Python package to support my random collection of Bosch devices.
-Most of this code was created by reverse engineering the device
-communication and/or file structures.
+Most of this code was created by investigating the device communication
+and their exported files.
+
+Installation:
+
+This package can be installed or upgraded from the Python Package Index
+with the help of the `pip` command:
+
+```sh
+pip install --upgrade bsch[plotting]
+```
+
+For any plotting, the package relies on matplotlib/numpy.
+Those packages are only installed if the "extra" plotting
+is specified in square brackets after the package name.
 
 ## Bosch GTC 400 C
 
