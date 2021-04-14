@@ -15,7 +15,8 @@ Implemented features:
   I call this data 'thermoblob'.
 * Extract metadata and the temperature matrix from
   the thermoblob.
-* Plot the thermography data (tool: `gtc400c-plot`).
+* Export a thermography plot (tool: `gtc400c-thermogram`).
+* Interactive plot of the thermography data (tool: `gtc400c-plot`).
 * Create a custom blend of thermography data on top
   of the real photo (tool: `gtc400c-blend`).
 * Download images via FTP when connected to the device
