@@ -14,8 +14,11 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     install_requires=[
-        'typing',
+        'typing;python_version<"3.5"',
     ],
+    extras_require={
+        "plotting":  ["numpy", "Pillow", "matplotlib"],
+    },
     entry_points = {
         'console_scripts': [
             'gtc400c-plot = bsch.gtc400c.util:cli_plot',
