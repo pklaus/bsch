@@ -19,6 +19,7 @@ setup(
     entry_points = {
         'console_scripts': [
             'gtc400c-plot = bsch.gtc400c.util:cli_plot',
+            'gtc400c-thermogram = bsch.gtc400c.util:cli_thermogram',
             'gtc400c-blend = bsch.gtc400c.util:cli_blend',
             'gtc400c-ftp = bsch.gtc400c.ftp:main',
         ],

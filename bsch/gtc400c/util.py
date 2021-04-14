@@ -1,15 +1,63 @@
 #!/usr/bin/env python
 
-import argparse, io
+import argparse, io, os
 
 from .jpeg import thermoblob_extr
 from .metadata import metadata_extr
 from .fusion import Thermography
+from . import colormaps
+
+def get_cmap(name):
+    """
+    Return the first matching colormap with that name by trying with:
+
+    * bsch.gtc400c.colormaps.get_cmap()
+    * matplotlib.cm.get_cmap()
+
+    Raises ValueError if not found.
+    """
+    try:
+        return colormaps.get_cmap(name)
+    except ValueError:
+        import matplotlib as mpl
+        return mpl.cm.get_cmap(name)
 
 def remove_ext(filename, ext=".JPG"):
     if filename.endswith(ext):
         return filename[:-len(ext)]
     return filename
+
+def cli_thermogram():
+    from matplotlib import pyplot as plt
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cmap", type=get_cmap, metavar="CMAP_NAME", help=f"Colormap to use. By default, the one stored in the JPEG is used. You can choose from the GTC colormaps {', '.join(colormaps.colormaps())}. As an ALTERNATIVE, select one of matplotlib's colormaps: {', '.join(plt.colormaps())}")
+    parser.add_argument("--output", help="Output filename. By default, it will be derived from the jpeg_file.")
+    parser.add_argument("jpeg_file", type=argparse.FileType("rb"))
+    args = parser.parse_args()
+    if args.output is None and args.jpeg_file.name:
+        args.output = remove_ext(args.jpeg_file.name) + ".thermogram.png"
+
+    t = Thermography(args.jpeg_file.read())
+
+    if args.cmap is None:
+        cmap = t.get("color_map")
+        args.cmap = colormaps.get_cmap(cmap.name)
+
+    fig = plt.figure(figsize=(8, 6), dpi=96)
+    ax = plt.gca()
+    matrix = t.get_matrix_lst()
+    plt.suptitle(os.path.basename(args.jpeg_file.name), size=16)
+    plt.title(f"min: {min(map(min, matrix)):.2f}  max: {max(map(max, matrix)):.2f}", size=10)
+    im = ax.imshow(matrix, extent=(0, 160, 0, 120), cmap=args.cmap)
+    ax_divider = make_axes_locatable(ax)
+    cax = ax_divider.append_axes("right", size="4%", pad="2%")
+    cbar = fig.colorbar(im, cax=cax)
+    plt.tight_layout()
+    cbar.set_label(t.unit, labelpad=-1)
+    plt.savefig(args.output)
+    print(args.output)
 
 def cli_plot():
     from matplotlib import pyplot as plt
