@@ -1,5 +1,6 @@
 __pycache__
 bsch.egg-info
+/.eggs
 /build
 /dist
 Makefile
